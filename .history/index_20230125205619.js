@@ -3,8 +3,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const app = express();
 require("dotenv").config();
-const { User, Kitten } = require("./db");
-const { setUser, requiresAuth } = require("./middleware");
+const { User } = require("./db");
+const { setUser, requireAuth } = require("./middleware");
 
 const { SIGNING_SECRET } = process.env;
 
@@ -12,7 +12,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(setUser);
 
-app.get("/", requiresAuth, async (req, res, next) => {
+app.get("/", async (req, res, next) => {
   try {
     res.send(`
       <h1>Welcome to Cyber Kittens!</h1>
@@ -74,18 +74,8 @@ app.post("/login", async (req, res, next) => {
 });
 // GET /kittens/:id
 // TODO - takes an id and returns the cat with that id
-app.get("/kittens/:id", requiresAuth, async (req, res, next) => {
-  const { id } = req.params;
-  console.log(id);
-  const { ownerId, age, color, name } = await Kitten.findByPk(id);
-  if (!ownerId) {
-    res.status(404).send("Resource not found");
-  }
-  if (ownerId != req.user.id) {
-    res.status(401).send("Unauthorized");
-    return;
-  }
-  res.send({ age, color, name });
+app.get("/user/:id", requireAuth, async (req, res, next) => {
+  res.sendStatus(200);
 });
 
 // POST /kittens

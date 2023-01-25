@@ -77,14 +77,18 @@ app.post("/login", async (req, res, next) => {
 app.get("/kittens/:id", requiresAuth, async (req, res, next) => {
   const { id } = req.params;
   console.log(id);
-  const { ownerId, age, color, name } = await Kitten.findByPk(id);
-  if (!ownerId) {
-    res.status(404).send("Resource not found");
-  }
+  const kitten = await Kitten.findByPk(id);
+  console.log(kitten.ownerId);
+  res.send(200);
+  return;
   if (ownerId != req.user.id) {
     res.status(401).send("Unauthorized");
     return;
   }
+  if (!kitten) {
+    res.status(404).send("Resource not found");
+  }
+  console.log(kitten);
   res.send({ age, color, name });
 });
 

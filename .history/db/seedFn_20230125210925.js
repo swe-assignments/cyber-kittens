@@ -1,4 +1,3 @@
-const bcrypt = require("bcrypt");
 const { sequelize } = require("./db");
 const { Kitten, User } = require("./");
 const { kittens, users } = require("./seedData");

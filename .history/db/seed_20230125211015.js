@@ -1,3 +1,4 @@
+const bcrypt = require("bcrypt");
 const { sequelize } = require("./db");
 const seed = require("./seedFn");
 

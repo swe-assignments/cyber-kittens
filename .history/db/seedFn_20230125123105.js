@@ -9,11 +9,8 @@ const seed = async () => {
     kittens.map(async (kitten, i) => {
       const userNumber = Math.ceil(Math.random() * 3);
       let newUser = await User.findByPk(userNumber);
-
-      let newKitten = await newUser.addKitten(kitten);
-      if (i == 0) {
-        console.log(kitten);
-      }
+      console.log(newUser, kitten);
+      await newUser[userNumber].addKitten(kitten);
     })
   );
 };

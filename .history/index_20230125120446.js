@@ -59,7 +59,7 @@ app.post("/register", async (req, res, next) => {
 // POST /register
 // OPTIONAL - takes req.body of {username, password} and creates a new user with the hashed password
 
-// POST /logit
+// POST /login
 // OPTIONAL - takes req.body of {username, password}, finds user by username, and compares the password with the hashed version from the DB
 
 // GET /kittens/:id

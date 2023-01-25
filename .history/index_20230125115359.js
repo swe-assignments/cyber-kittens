@@ -7,7 +7,6 @@ const { User } = require("./db");
 const { SIGNING_SECRET } = process.env;
 
 const setUser = (req, res, next) => {
-  console.log(req.headers);
   try {
     const auth = req.header("Authorization");
     if (!auth) {
@@ -28,6 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(setUser);
 
 app.get("/", async (req, res, next) => {
+  console.log(req.user);
   try {
     res.send(`
       <h1>Welcome to Cyber Kittens!</h1>
@@ -44,6 +44,7 @@ app.get("/", async (req, res, next) => {
 app.post("/register", async (req, res, next) => {
   try {
     const { username, password } = req.body;
+    console.log(username, password);
     const { id } = await User.create({ username, password });
     const token = jwt.sign({ id, username }, SIGNING_SECRET);
     res.send({ message: "User successfully created", token });
@@ -59,7 +60,7 @@ app.post("/register", async (req, res, next) => {
 // POST /register
 // OPTIONAL - takes req.body of {username, password} and creates a new user with the hashed password
 
-// POST /logit
+// POST /login
 // OPTIONAL - takes req.body of {username, password}, finds user by username, and compares the password with the hashed version from the DB
 
 // GET /kittens/:id
@@ -67,13 +68,12 @@ app.post("/register", async (req, res, next) => {
 app.get("/user/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(id, req.user.id);
-    if (id == req.user.id) {
-      const user = await User.findByPk(id);
-      res.send(user);
+    if (id != req.user.id) {
+      res.sendStatus(404);
       return;
     }
-    res.status(403).send("You are not authorized.");
+    const user = await User.findByPk(id);
+    res.send(user);
   } catch (error) {
     console.log(error);
     next(error);

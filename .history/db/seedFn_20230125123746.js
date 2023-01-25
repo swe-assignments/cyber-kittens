@@ -12,7 +12,7 @@ const seed = async () => {
 
       let newKitten = await newUser.addKitten(kitten);
       if (i == 0) {
-        console.log(kitten);
+        console.log(newsequKitten);
       }
     })
   );

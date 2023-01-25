@@ -4,10 +4,9 @@ const app = express();
 require("dotenv").config();
 const { User } = require("./db");
 
-const { SIGNING_SECRET } = process.env;
+const SIGNING_SECRET = process.env.SIGNING_SECRET;
 
 const setUser = (req, res, next) => {
-  console.log(req.headers);
   try {
     const auth = req.header("Authorization");
     if (!auth) {
@@ -44,9 +43,10 @@ app.get("/", async (req, res, next) => {
 app.post("/register", async (req, res, next) => {
   try {
     const { username, password } = req.body;
-    const { id } = await User.create({ username, password });
-    const token = jwt.sign({ id, username }, SIGNING_SECRET);
-    res.send({ message: "User successfully created", token });
+    console.log(username, password);
+    const user = await User.create({ username, password });
+
+    res.sendStatus(200);
   } catch (error) {
     console.log(error);
     next(error);
@@ -59,26 +59,11 @@ app.post("/register", async (req, res, next) => {
 // POST /register
 // OPTIONAL - takes req.body of {username, password} and creates a new user with the hashed password
 
-// POST /logit
+// POST /login
 // OPTIONAL - takes req.body of {username, password}, finds user by username, and compares the password with the hashed version from the DB
 
 // GET /kittens/:id
 // TODO - takes an id and returns the cat with that id
-app.get("/user/:id", async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    console.log(id, req.user.id);
-    if (id == req.user.id) {
-      const user = await User.findByPk(id);
-      res.send(user);
-      return;
-    }
-    res.status(403).send("You are not authorized.");
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
-});
 
 // POST /kittens
 // TODO - takes req.body of {name, age, color} and creates a new cat with the given name, age, and color

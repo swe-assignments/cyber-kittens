@@ -3,10 +3,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const app = express();
 require("dotenv").config();
-const { User } = require("./models");
+const { User, Kitten } = require("./models");
 const { setUser, requiresAuth } = require("./middleware");
-const { register } = require("./routes/register");
-const { login } = require("./routes/login");
 
 const { SIGNING_SECRET } = process.env;
 
@@ -34,11 +32,54 @@ app.get("/", async (req, res, next) => {
   }
 });
 
-app.post("/register", register);
+// Verifies token with jwt.verify and sets req.user
+// TODO - Create authentication middleware
 
-app.post("/login", login);
+// POST /register
+// OPTIONAL - takes req.body of {username, password} and creates a new user with the hashed password
+app.post("/register", async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    const user = await User.findOne({ where: { username } });
+    if (user) {
+      res.send("Username already taken.");
+      return;
+    }
+    const hashedPW = await bcrypt.hash(password, 8);
+    const { id } = await User.create({ username, password: hashedPW });
+    const token = jwt.sign({ id, username }, SIGNING_SECRET);
+    res.send({ message: "User successfully created", token });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
 
-app.use("/kittens", requiresAuth, require("./routes/kittens"));
+// POST /login
+// OPTIONAL - takes req.body of {username, password}, finds user by username, and compares the password with the hashed version from the DB
+app.post("/login", async (req, res, next) => {
+  try {
+    const { username, password } = req.body;
+    const { id, password: hashedPW } = await User.findOne({
+      where: { username },
+    });
+
+    if (id) {
+      const isMatch = await bcrypt.compare(password, hashedPW);
+      if (isMatch) {
+        const token = jwt.sign({ id, username }, SIGNING_SECRET);
+        res.send({ message: "User successfully logged in.", token });
+        return;
+      }
+    }
+    res.send("fix later");
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+app.use("/kittens", require("./routes/kittens"));
 
 // GET /kittens/:id
 // TODO - takes an id and returns the cat with that id

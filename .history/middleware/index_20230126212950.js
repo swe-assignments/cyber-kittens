@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const { SIGNING_SECRET } = process.env;
 
-module.exports.setUser = (req, res, next) => {
+exports.setUser = (req, res, next) => {
   try {
     const auth = req.header("Authorization");
     if (!auth) {
@@ -21,21 +21,14 @@ module.exports.setUser = (req, res, next) => {
 
 exports.requiresAuth = async (req, res, next) => {
   try {
-    if (req.user) {
-      next();
-      return;
+    console.log(req.params.id, req.user.id, "should return 401 here");
+    if (!req.user) return res.status(401).send("Unauthorized");
+    if (req.params.id && req.params.id != req.user.id) {
+      return res.status(401).send("Unauthorized");
     }
-
-    res.status(401).send("Unauthorized");
+    if (req.user) return next();
   } catch (error) {
     console.log(error);
     next(error);
   }
-};
-
-exports.notOwner = (req, res, next) => {
-  if (req.user.id != req.params.id) {
-    return res.status(401).send("Unauthorized");
-  }
-  next();
 };

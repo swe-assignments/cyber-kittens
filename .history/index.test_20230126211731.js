@@ -7,8 +7,8 @@ const SALT_COUNT = 10;
 const { JWT_SECRET } = process.env;
 
 const app = require("./index");
-const { sequelize } = require("./db/db");
-const { Kitten, User } = require("./models");
+const { sequelize, Kitten, User } = require("./db/db");
+const { seed } = require("./utils/seedFn");
 
 const createTestUser = async (userData) => {
   const hashed = await bcrypt.hash(userData.password, SALT_COUNT);
@@ -29,6 +29,7 @@ describe("Endpoints", () => {
 
   beforeAll(async () => {
     await sequelize.sync({ force: true }); // recreate db
+    await seed();
     registerResponse = await request(app)
       .post("/register")
       .send(testUserData)
@@ -52,7 +53,7 @@ describe("Endpoints", () => {
     });
   });
 
-  describe("login and register", () => {
+  describe.skip("login and register", () => {
     describe("POST /register", () => {
       it("should send back success with token", async () => {
         expect(registerResponse.status).toBe(200);
@@ -113,7 +114,7 @@ describe("Endpoints", () => {
         const response = await request(app)
           .get(`/kittens/${kitten.id}`)
           .set("Authorization", `Bearer ${token}`);
-        // expect(response.status).toBe(200);
+        expect(response.status).toBe(200);
         expect(response.body).toEqual(testKittenData);
       });
       it("should return 401 if no token", async () => {

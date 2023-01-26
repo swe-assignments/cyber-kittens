@@ -6,7 +6,6 @@ require("dotenv").config();
 const { User } = require("./models");
 const { setUser, requiresAuth } = require("./middleware");
 const { register } = require("./routes/register");
-const { login } = require("./routes/login");
 
 const { SIGNING_SECRET } = process.env;
 

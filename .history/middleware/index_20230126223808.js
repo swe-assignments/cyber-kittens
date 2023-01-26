@@ -35,7 +35,7 @@ exports.requiresAuth = async (req, res, next) => {
 
 exports.notOwner = (req, res, next) => {
   if (req.user.id != req.params.id) {
-    return res.status(401).send("Unauthorized");
+    return res.status(401).send("No permissions");
   }
   next();
 };

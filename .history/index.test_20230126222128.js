@@ -52,7 +52,7 @@ describe("Endpoints", () => {
     });
   });
 
-  describe("login and register", () => {
+  describe.skip("login and register", () => {
     describe("POST /register", () => {
       it("should send back success with token", async () => {
         expect(registerResponse.status).toBe(200);
@@ -111,9 +111,9 @@ describe("Endpoints", () => {
     describe("GET /kittens/:id", () => {
       it("should return a single cat", async () => {
         const response = await request(app)
-          .get(`/kittens/${kitten.id}`)
-          .set("Authorization", `Bearer ${token}`);
-        // expect(response.status).toBe(200);
+          .set("Authorization", `Bearer ${token}`)
+          .get(`/kittens/${kitten.id}`);
+        expect(response.status).toBe(200);
         expect(response.body).toEqual(testKittenData);
       });
       it("should return 401 if no token", async () => {

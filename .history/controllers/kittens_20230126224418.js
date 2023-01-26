@@ -38,6 +38,16 @@ exports.createOne = async (req, res, next) => {
     next(error);
   }
 };
+exports.updateOne = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const one = await Kitten.findByPk(id);
+    return res.status(200).send(one);
+  } catch (error) {
+    console.error("Kittens: getOne", error);
+    next(error);
+  }
+};
 exports.deleteOne = async (req, res, next) => {
   try {
     const { id } = req.params;

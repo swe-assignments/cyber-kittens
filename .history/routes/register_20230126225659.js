@@ -2,7 +2,7 @@ const { User } = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-module.exports = async (req, res, next) => {
+exports.register = async (req, res, next) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ where: { username } });

@@ -1,10 +1,14 @@
 const express = require("express");
 const app = express();
 require("dotenv").config();
+
 const { setUser, requiresAuth } = require("./middleware");
+
+const { login } = require("./routes/login");
+const { home } = require("./routes/home");
+
 const { SIGNING_SECRET } = process.env;
 
-//Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
@@ -13,10 +17,8 @@ app.use((req, res, next) => {
   next();
 });
 app.use(setUser);
-//Router
 app.use("/kittens", requiresAuth, require("./routes/kittens"));
 
-//End-Points
 app.get("/", require("./routes/home"));
 app.post("/register", require("./routes/register"));
 app.post("/login", require("./routes/login"));

@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 const { SIGNING_SECRET } = process.env;
 
 module.exports.setUser = (req, res, next) => {
@@ -32,7 +33,7 @@ exports.requiresAuth = async (req, res, next) => {
   }
 };
 
-exports.checkOwner = (req, res, next) => {
+exports.notOwner = (req, res, next) => {
   if (req.user.id != req.params.id) {
     return res.status(401).send("Unauthorized");
   }
